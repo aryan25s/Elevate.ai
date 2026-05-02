@@ -30,8 +30,8 @@ const SEOAssistant = () => {
   };
 
   return (
-    <div className="section-container pt-32">
-      <div className="text-center mb-16">
+    <div className="section-container pt-24">
+      <div className="text-center mb-12">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}

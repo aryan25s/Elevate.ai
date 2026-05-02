@@ -26,7 +26,7 @@ const Home = () => {
   return (
     <div className="bg-[var(--bg-color)] overflow-hidden">
       {/* Hero Section */}
-      <section className="relative pt-40 pb-24 text-center">
+      <section className="relative pt-32 pb-16 text-center">
         <div className="radial-glow" />
         
         <div className="section-container">
@@ -46,7 +46,7 @@ const Home = () => {
             className="text-5xl md:text-7xl font-extrabold leading-tight mb-6"
           >
             Elevate your business with <br />
-            <span className="purple-gradient-text italic">AI-powered intelligence</span>
+            <span className="purple-gradient-text">AI-powered intelligence</span>
           </motion.h1>
 
           <motion.p
@@ -103,7 +103,7 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 bg-black/5 dark:bg-black/20">
+      <section id="features" className="py-16 bg-black/5 dark:bg-black/20">
         <div className="section-container">
           <div className="text-center mb-16">
             <div className="badge-new inline-block mb-4">Features</div>
@@ -155,7 +155,7 @@ const Home = () => {
       </section>
 
       {/* Solutions Section */}
-      <section id="solutions" className="py-24">
+      <section id="solutions" className="py-16">
         <div className="section-container">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold">Why Choose <span className="purple-gradient-text">Elevate AI</span></h2>
@@ -189,7 +189,7 @@ const Home = () => {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-24 bg-black/5 dark:bg-black/20">
+      <section id="pricing" className="py-16 bg-black/5 dark:bg-black/20">
         <div className="section-container text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -199,7 +199,7 @@ const Home = () => {
           >
             Pricing
           </motion.div>
-          <h2 className="text-4xl md:text-5xl font-black mb-4 italic">
+          <h2 className="text-4xl md:text-5xl font-black mb-4">
             Simple, <span className="purple-gradient-text">Transparent Pricing</span>
           </h2>
           <p className="text-[var(--muted-text)] mb-16 font-medium">Choose the perfect plan for your needs</p>
@@ -248,7 +248,7 @@ const Home = () => {
       </section>
 
       {/* Final CTA */}
-      <section className="py-24">
+      <section className="py-16">
         <div className="section-container">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
