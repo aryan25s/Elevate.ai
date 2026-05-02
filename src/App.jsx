@@ -1,30 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
-
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-
 import Home from './pages/Home';
-import Portfolio from './pages/Portfolio';
-import DataScientist from './pages/DataScientist';
 import BlogGenerator from './pages/BlogGenerator';
 import SEOAssistant from './pages/SEOAssistant';
+import DataScientist from './pages/DataScientist';
 import SentimentAnalysis from './pages/SentimentAnalysis';
+import './styles/global.css';
 
 const App = () => {
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState('dark');
 
   useEffect(() => {
-    // Check local storage for theme preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      // Default to user's system preference
-      setTheme('dark');
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(savedTheme);
+    document.documentElement.setAttribute('data-theme', savedTheme);
   }, []);
 
   const toggleTheme = () => {
@@ -35,20 +26,20 @@ const App = () => {
   };
 
   return (
-    <>
+    <div className="min-h-screen flex flex-col bg-[var(--bg-color)] text-[var(--text-color)] selection:bg-indigo-500/30">
       <Navbar theme={theme} toggleTheme={toggleTheme} />
-      <main>
+      <main className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="/data-scientist" element={<DataScientist />} />
           <Route path="/blog-generator" element={<BlogGenerator />} />
           <Route path="/seo" element={<SEOAssistant />} />
+          <Route path="/data-science" element={<DataScientist />} />
           <Route path="/sentiment" element={<SentimentAnalysis />} />
+          <Route path="/app" element={<BlogGenerator />} />
         </Routes>
       </main>
       <Footer />
-    </>
+    </div>
   );
 };
 
