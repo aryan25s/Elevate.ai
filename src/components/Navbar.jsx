@@ -79,7 +79,7 @@ const Navbar = ({ theme, toggleTheme }) => {
           </button>
 
           {!isAppPage && (
-            <Link to="/blog-generator" target="_blank" className="btn-primary-new text-sm">
+            <Link to="/login" target="_blank" className="btn-primary-new text-sm">
               Get Started
             </Link>
           )}

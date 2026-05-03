@@ -26,7 +26,7 @@ const Home = () => {
   return (
     <div className="bg-[var(--bg-color)] overflow-hidden">
       {/* Hero Section */}
-      <section className="relative pt-40 pb-24 text-center">
+      <section className="relative pt-32 pb-16 text-center">
         <div className="radial-glow" />
         
         <div className="section-container">
@@ -46,7 +46,7 @@ const Home = () => {
             className="text-5xl md:text-7xl font-extrabold leading-tight mb-6"
           >
             Elevate your business with <br />
-            <span className="purple-gradient-text italic">AI-powered intelligence</span>
+            <span className="purple-gradient-text">AI-powered intelligence</span>
           </motion.h1>
 
           <motion.p
@@ -66,7 +66,7 @@ const Home = () => {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link 
-              to="/blog-generator" 
+              to="/login" 
               target="_blank" 
               className="btn-primary-new flex items-center gap-2 px-8 py-3"
             >
@@ -103,7 +103,7 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 bg-black/5 dark:bg-black/20">
+      <section id="features" className="py-16 bg-black/5 dark:bg-black/20">
         <div className="section-container">
           <div className="text-center mb-16">
             <div className="badge-new inline-block mb-4">Features</div>
@@ -120,7 +120,6 @@ const Home = () => {
               title="AI Blog Generator"
               desc="Auto-generate SEO-ready blogs with intelligent content creation. Save hours of writing time."
               color="bg-sky-400"
-              link="/blog-generator"
               index={0}
             />
             <FeatureCard 
@@ -129,7 +128,6 @@ const Home = () => {
               title="SEO Optimization"
               desc="Smart keyword suggestions and ranking analysis to boost your online visibility."
               color="bg-purple-400"
-              link="/seo"
               index={1}
             />
             <FeatureCard 
@@ -138,7 +136,6 @@ const Home = () => {
               title="AI Data Scientist"
               desc="Get data insights, generate charts, and make predictions with AI-powered analysis."
               color="bg-orange-500"
-              link="/data-science"
               index={2}
             />
             <FeatureCard 
@@ -147,7 +144,6 @@ const Home = () => {
               title="Sentiment Analyzer"
               desc="Analyze customer sentiment from feedback, reviews, and social media interactions."
               color="bg-blue-500"
-              link="/sentiment"
               index={3}
             />
           </div>
@@ -155,7 +151,7 @@ const Home = () => {
       </section>
 
       {/* Solutions Section */}
-      <section id="solutions" className="py-24">
+      <section id="solutions" className="py-16">
         <div className="section-container">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold">Why Choose <span className="purple-gradient-text">Elevate AI</span></h2>
@@ -189,7 +185,7 @@ const Home = () => {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-24 bg-black/5 dark:bg-black/20">
+      <section id="pricing" className="py-16 bg-black/5 dark:bg-black/20">
         <div className="section-container text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -199,7 +195,7 @@ const Home = () => {
           >
             Pricing
           </motion.div>
-          <h2 className="text-4xl md:text-5xl font-black mb-4 italic">
+          <h2 className="text-4xl md:text-5xl font-black mb-4">
             Simple, <span className="purple-gradient-text">Transparent Pricing</span>
           </h2>
           <p className="text-[var(--muted-text)] mb-16 font-medium">Choose the perfect plan for your needs</p>
@@ -213,7 +209,7 @@ const Home = () => {
               features={['5 AI blog posts per month', 'Basic SEO analysis', 'Community support', 'Access to dashboard']}
               cta="Get Started"
               index={0}
-              appLink="/blog-generator"
+              appLink="/login"
             />
             <PricingCard 
               name="Starter" 
@@ -223,6 +219,7 @@ const Home = () => {
               features={['50 AI blog posts per month', 'Advanced SEO optimization', 'Sentiment analysis', 'Email support', 'API access']}
               cta="Start Free Trial"
               index={1}
+              appLink="/login"
             />
             <PricingCard 
               name="Pro" 
@@ -233,6 +230,7 @@ const Home = () => {
               features={['Unlimited AI content', 'Full data analytics suite', 'Priority support', 'Custom integrations', 'Team collaboration', 'Advanced analytics']}
               cta="Get Started"
               index={2}
+              appLink="/login"
             />
             <PricingCard 
               name="Business" 
@@ -242,13 +240,14 @@ const Home = () => {
               features={['Everything in Pro', 'Dedicated account manager', 'Custom AI training', 'White-label solutions', 'SLA guarantee', 'Advanced security']}
               cta="Contact Sales"
               index={3}
+              appLink="/login"
             />
           </div>
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="py-24">
+      <section className="py-16">
         <div className="section-container">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
@@ -268,7 +267,7 @@ const Home = () => {
              </p>
              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                <Link 
-                to="/blog-generator" 
+                to="/login" 
                 target="_blank" 
                 className="btn-primary-new px-10 py-4 flex items-center gap-2 text-lg"
                >
@@ -287,7 +286,7 @@ const Home = () => {
 
 /* Component Helpers */
 
-const FeatureCard = ({ badge, icon, title, desc, color, link, index }) => (
+const FeatureCard = ({ badge, icon, title, desc, color, index }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -308,10 +307,7 @@ const FeatureCard = ({ badge, icon, title, desc, color, link, index }) => (
       {icon}
     </div>
     <h3 className="text-2xl font-bold mb-4 group-hover:purple-gradient-text transition-all duration-300 relative z-10">{title}</h3>
-    <p className="text-[var(--muted-text)] mb-8 leading-relaxed text-sm font-medium relative z-10">{desc}</p>
-    <Link to={link} target="_blank" rel="noopener noreferrer" className="text-sm font-bold flex items-center gap-2 group/btn text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-500 relative z-10">
-      Learn more <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform duration-300" />
-    </Link>
+    <p className="text-[var(--muted-text)] mb-2 leading-relaxed text-sm font-medium relative z-10">{desc}</p>
   </motion.div>
 );
 
