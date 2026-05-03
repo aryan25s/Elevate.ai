@@ -66,7 +66,7 @@ const Home = () => {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link 
-              to="/blog-generator" 
+              to="/login" 
               target="_blank" 
               className="btn-primary-new flex items-center gap-2 px-8 py-3"
             >
@@ -209,7 +209,7 @@ const Home = () => {
               features={['5 AI blog posts per month', 'Basic SEO analysis', 'Community support', 'Access to dashboard']}
               cta="Get Started"
               index={0}
-              appLink="/blog-generator"
+              appLink="/login"
             />
             <PricingCard 
               name="Starter" 
@@ -219,6 +219,7 @@ const Home = () => {
               features={['50 AI blog posts per month', 'Advanced SEO optimization', 'Sentiment analysis', 'Email support', 'API access']}
               cta="Start Free Trial"
               index={1}
+              appLink="/login"
             />
             <PricingCard 
               name="Pro" 
@@ -229,6 +230,7 @@ const Home = () => {
               features={['Unlimited AI content', 'Full data analytics suite', 'Priority support', 'Custom integrations', 'Team collaboration', 'Advanced analytics']}
               cta="Get Started"
               index={2}
+              appLink="/login"
             />
             <PricingCard 
               name="Business" 
@@ -238,6 +240,7 @@ const Home = () => {
               features={['Everything in Pro', 'Dedicated account manager', 'Custom AI training', 'White-label solutions', 'SLA guarantee', 'Advanced security']}
               cta="Contact Sales"
               index={3}
+              appLink="/login"
             />
           </div>
         </div>
@@ -264,7 +267,7 @@ const Home = () => {
              </p>
              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                <Link 
-                to="/blog-generator" 
+                to="/login" 
                 target="_blank" 
                 className="btn-primary-new px-10 py-4 flex items-center gap-2 text-lg"
                >

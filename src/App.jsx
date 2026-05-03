@@ -7,10 +7,13 @@ import BlogGenerator from './pages/BlogGenerator';
 import SEOAssistant from './pages/SEOAssistant';
 import DataScientist from './pages/DataScientist';
 import SentimentAnalysis from './pages/SentimentAnalysis';
+import Login from './pages/Login';
+import { useLocation } from 'react-router-dom';
 import './styles/global.css';
 
 const App = () => {
   const [theme, setTheme] = useState('dark');
+  const location = useLocation();
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -25,12 +28,15 @@ const App = () => {
     localStorage.setItem('theme', newTheme);
   };
 
+  const isLoginPage = location.pathname === '/login';
+
   return (
     <div className="min-h-screen flex flex-col bg-[var(--bg-color)] text-[var(--text-color)] selection:bg-indigo-500/30">
-      <Navbar theme={theme} toggleTheme={toggleTheme} />
+      {!isLoginPage && <Navbar theme={theme} toggleTheme={toggleTheme} />}
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/blog-generator" element={<BlogGenerator />} />
           <Route path="/seo" element={<SEOAssistant />} />
           <Route path="/data-science" element={<DataScientist />} />
@@ -38,7 +44,7 @@ const App = () => {
           <Route path="/app" element={<BlogGenerator />} />
         </Routes>
       </main>
-      <Footer />
+      {!isLoginPage && <Footer />}
     </div>
   );
 };
