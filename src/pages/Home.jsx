@@ -120,7 +120,6 @@ const Home = () => {
               title="AI Blog Generator"
               desc="Auto-generate SEO-ready blogs with intelligent content creation. Save hours of writing time."
               color="bg-sky-400"
-              link="/blog-generator"
               index={0}
             />
             <FeatureCard 
@@ -129,7 +128,6 @@ const Home = () => {
               title="SEO Optimization"
               desc="Smart keyword suggestions and ranking analysis to boost your online visibility."
               color="bg-purple-400"
-              link="/seo"
               index={1}
             />
             <FeatureCard 
@@ -138,7 +136,6 @@ const Home = () => {
               title="AI Data Scientist"
               desc="Get data insights, generate charts, and make predictions with AI-powered analysis."
               color="bg-orange-500"
-              link="/data-science"
               index={2}
             />
             <FeatureCard 
@@ -147,7 +144,6 @@ const Home = () => {
               title="Sentiment Analyzer"
               desc="Analyze customer sentiment from feedback, reviews, and social media interactions."
               color="bg-blue-500"
-              link="/sentiment"
               index={3}
             />
           </div>
@@ -287,7 +283,7 @@ const Home = () => {
 
 /* Component Helpers */
 
-const FeatureCard = ({ badge, icon, title, desc, color, link, index }) => (
+const FeatureCard = ({ badge, icon, title, desc, color, index }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -308,10 +304,7 @@ const FeatureCard = ({ badge, icon, title, desc, color, link, index }) => (
       {icon}
     </div>
     <h3 className="text-2xl font-bold mb-4 group-hover:purple-gradient-text transition-all duration-300 relative z-10">{title}</h3>
-    <p className="text-[var(--muted-text)] mb-8 leading-relaxed text-sm font-medium relative z-10">{desc}</p>
-    <Link to={link} target="_blank" rel="noopener noreferrer" className="text-sm font-bold flex items-center gap-2 group/btn text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-500 relative z-10">
-      Learn more <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform duration-300" />
-    </Link>
+    <p className="text-[var(--muted-text)] mb-2 leading-relaxed text-sm font-medium relative z-10">{desc}</p>
   </motion.div>
 );
 
