@@ -10,8 +10,8 @@ const Login = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // Simulate login and redirect to the first tool
-    navigate('/blog-generator');
+    // Simulate login and redirect to the unified dashboard
+    navigate('/app');
   };
 
   return (

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Target, Globe, ExternalLink, Zap, ArrowUpRight, TrendingUp } from 'lucide-react';
+import { Search, Target, Globe, ExternalLink, Zap, ArrowUpRight, TrendingUp, BarChart } from 'lucide-react';
 
-const SEOAssistant = () => {
+const SEOAssistant = ({ isDashboardView = false }) => {
   const [topic, setTopic] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [output, setOutput] = useState(null);
@@ -30,8 +30,8 @@ const SEOAssistant = () => {
   };
 
   return (
-    <div className="section-container pt-24">
-      <div className="text-center mb-12">
+    <div className={`${isDashboardView ? 'p-6 sm:p-10' : 'section-container pt-24'}`}>
+      <div className={`text-center ${isDashboardView ? 'mb-10' : 'mb-12'}`}>
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -39,8 +39,8 @@ const SEOAssistant = () => {
         >
           Visibility Engine
         </motion.div>
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">AI SEO Assistant 🔍</h1>
-        <p className="text-[var(--muted-text)] text-lg max-w-2xl mx-auto">
+        <h1 className={`${isDashboardView ? 'text-3xl' : 'text-4xl md:text-5xl'} font-bold mb-4`}>AI SEO Assistant 🔍</h1>
+        <p className="text-[var(--muted-text)] text-base max-w-2xl mx-auto">
           Unlock top search rankings with AI-driven keyword research and content optimization strategies.
         </p>
       </div>

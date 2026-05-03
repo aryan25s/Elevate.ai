@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Database, Send, CheckCircle2, BarChart, PieChart, Activity } from 'lucide-react';
+import { Upload, Database, Send, CheckCircle2, BarChart, PieChart, Activity, FileText } from 'lucide-react';
 
-const DataScientist = () => {
+const DataScientist = ({ isDashboardView = false }) => {
   const [file, setFile] = useState(null);
   const [query, setQuery] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -26,8 +26,8 @@ const DataScientist = () => {
   };
 
   return (
-    <div className="section-container pt-24">
-      <div className="text-center mb-12">
+    <div className={`${isDashboardView ? 'p-6 sm:p-10' : 'section-container pt-24'}`}>
+      <div className={`text-center ${isDashboardView ? 'mb-10' : 'mb-12'}`}>
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -35,8 +35,8 @@ const DataScientist = () => {
         >
           Insights Engine
         </motion.div>
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">AI Data Scientist 📊</h1>
-        <p className="text-[var(--muted-text)] text-lg max-w-2xl mx-auto">
+        <h1 className={`${isDashboardView ? 'text-3xl' : 'text-4xl md:text-5xl'} font-bold mb-4`}>AI Data Scientist 📊</h1>
+        <p className="text-[var(--muted-text)] text-base max-w-2xl mx-auto">
           Upload your business data and get instant answers to your most pressing questions with high-speed AI analysis.
         </p>
       </div>
