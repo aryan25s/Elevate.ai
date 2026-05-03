@@ -1,12 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Database, Send, CheckCircle2, BarChart, PieChart, Activity, FileText } from 'lucide-react';
 
-const DataScientist = ({ isDashboardView = false }) => {
+const DataScientist = ({ isDashboardView = false, addToHistory, externalInput, triggerAction, externalFile }) => {
   const [file, setFile] = useState(null);
   const [query, setQuery] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [output, setOutput] = useState(null);
+
+  useEffect(() => {
+    if (externalFile) {
+      setFile(externalFile);
+    }
+  }, [externalFile]);
+
+  useEffect(() => {
+    if (isDashboardView && externalInput && triggerAction > 0) {
+      setQuery(externalInput);
+      handleAnalyze(externalInput);
+    }
+  }, [triggerAction]);
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -14,14 +27,19 @@ const DataScientist = ({ isDashboardView = false }) => {
     }
   };
 
-  const handleAnalyze = () => {
-    if (!file || !query.trim()) return;
+  const handleAnalyze = (q = query) => {
+    const finalQuery = q || query;
+    const finalFile = file || externalFile;
+    if (!finalFile || !finalQuery.trim()) return;
     
     setIsAnalyzing(true);
     // Simulate API call
     setTimeout(() => {
-      setOutput(`Analysis for query: "${query}"\n\n1. Revenue Trends: We detected a 15% increase in Q3 compared to Q2, driven mainly by the new product launch.\n2. Customer Churn: Your data shows a 5% churn rate, mostly concentrated in the 18-24 demographic.\n3. Recommendations: Focus marketing efforts on retaining younger demographics and push promotions for the upcoming holiday season.\n\n(Note: This is an AI-generated dummy response based on your file "${file.name}")`);
+      setOutput(`Analysis for query: "${finalQuery}"\n\n1. Revenue Trends: We detected a 15% increase in Q3 compared to Q2, driven mainly by the new product launch.\n2. Customer Churn: Your data shows a 5% churn rate, mostly concentrated in the 18-24 demographic.\n3. Recommendations: Focus marketing efforts on retaining younger demographics and push promotions for the upcoming holiday season.\n\n(Note: This is an AI-generated dummy response based on your file "${finalFile.name}")`);
       setIsAnalyzing(false);
+      if (isDashboardView && addToHistory) {
+        addToHistory(finalQuery, 'data');
+      }
     }, 2000);
   };
 
@@ -51,10 +69,10 @@ const DataScientist = ({ isDashboardView = false }) => {
           >
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
               <Database className="text-indigo-500" size={20} />
-              1. Provide Data
+              {file ? 'Data Provided' : '1. Provide Data'}
             </h2>
             
-            <label className="relative block border-2 border-dashed border-[var(--border-color)] rounded-2xl p-10 text-center cursor-pointer hover:border-indigo-500 transition-colors group bg-[var(--bg-color)]/30">
+            <label className={`relative block border-2 border-dashed border-[var(--border-color)] rounded-2xl ${file ? 'p-6' : 'p-10'} text-center cursor-pointer hover:border-indigo-500 transition-colors group bg-[var(--bg-color)]/30`}>
               <input 
                 type="file" 
                 accept=".csv" 
