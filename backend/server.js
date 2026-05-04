@@ -1,13 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
-dotenv.config();
-
+import dotenv from 'dotenv';    
 import { requireAuth } from './middleware/auth.js';
 import queryRouter from './routes/query.js';
 import conversationsRouter from './routes/conversations.js';
 import filesRouter from './routes/files.js';
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;

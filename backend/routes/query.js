@@ -41,10 +41,12 @@ async function loadHistory(conversationId) {
     .order('sequence_number', { ascending: true });
 
   // Gemini expects role "model" not "assistant"
+  console.log('loadHistory returned', data);
   return (data || []).map(m => ({
     role: m.role === 'assistant' ? 'model' : 'user',
     parts: [{ text: m.content }],
   }));
+  
 }
 
 // ─── Save a message and bump conversation updated_at ─────────────────────────
