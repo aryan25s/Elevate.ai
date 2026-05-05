@@ -1,45 +1,42 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, Loader2, User, Sparkles, Copy, Check, Paperclip, X, BarChart2 } from 'lucide-react';
 import { sendMessage, getMessages } from '../lib/api';
-
+import { Star } from 'lucide-react';
+import SeoModal from './SeoModal';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 // ─── Chart renderer ───────────────────────────────────────────────────────────
 function ChartRenderer({ chartConfig }) {
   const canvasRef = useRef(null);
-  const chartRef = useRef(null);
+  const chartRef  = useRef(null);
 
   useEffect(() => {
     if (!chartConfig || !canvasRef.current || !window.Chart) return;
     if (chartRef.current) chartRef.current.destroy();
 
     const colors = [
-      'rgba(99,102,241,0.8)', 'rgba(16,185,129,0.8)',
-      'rgba(245,158,11,0.8)', 'rgba(239,68,68,0.8)', 'rgba(139,92,246,0.8)',
+      'rgba(99,102,241,0.8)',
+      'rgba(16,185,129,0.8)',
+      'rgba(245,158,11,0.8)',
+      'rgba(239,68,68,0.8)',
+      'rgba(139,92,246,0.8)',
     ];
 
     chartRef.current = new window.Chart(canvasRef.current, {
       type: chartConfig.type || 'bar',
       data: {
-        labels: chartConfig.labels,
-        datasets: (chartConfig.datasets || []).map((ds, i) => ({
+        labels: chartConfig.data?.labels || [],
+        datasets: (chartConfig.data?.datasets || []).map((ds, i) => ({
           ...ds,
           backgroundColor: colors[i % colors.length],
-          borderColor: colors[i % colors.length].replace('0.8', '1'),
-          borderWidth: 1,
-          borderRadius: chartConfig.type === 'bar' ? 4 : 0,
+          borderColor:     colors[i % colors.length].replace('0.8', '1'),
+          borderWidth:     1,
+          borderRadius:    chartConfig.type === 'bar' ? 4 : 0,
         })),
       },
       options: {
         responsive: true,
-        plugins: {
-          legend: { labels: { color: '#9ca3af', font: { size: 11 } } },
-          title: { display: !!chartConfig.title, text: chartConfig.title, color: '#e5e7eb', font: { size: 13, weight: '500' } },
-        },
-        scales: chartConfig.type !== 'pie' ? {
-          x: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
-          y: { ticks: { color: '#6b7280', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
-        } : {},
+        ...(chartConfig.options || {}),
       },
     });
 
@@ -47,7 +44,10 @@ function ChartRenderer({ chartConfig }) {
   }, [chartConfig]);
 
   return (
-    <div className="mt-3 p-3 rounded-xl border border-white/8" style={{ background: 'rgba(255,255,255,0.03)' }}>
+    <div
+      className="mt-3 p-3 rounded-xl border border-white/8"
+      style={{ background: 'rgba(255,255,255,0.03)' }}
+    >
       <canvas ref={canvasRef} />
     </div>
   );
@@ -57,12 +57,12 @@ function ChartRenderer({ chartConfig }) {
 function inlineMd(text) {
   return text
     .replace(/\*\*(.+?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em class="text-gray-300">$1</em>')
-    .replace(/`(.+?)`/g, '<code class="bg-white/10 text-emerald-300 px-1.5 py-0.5 rounded text-xs font-mono">$1</code>');
+    .replace(/\*(.+?)\*/g,     '<em class="text-gray-300">$1</em>')
+    .replace(/`(.+?)`/g,       '<code class="bg-white/10 text-emerald-300 px-1.5 py-0.5 rounded text-xs font-mono">$1</code>');
 }
 
 function MessageContent({ content }) {
-  const lines = content.split('\n');
+  const lines    = (content || '').split('\n');
   const elements = [];
   let i = 0, codeBuffer = [], inCode = false;
 
@@ -72,27 +72,43 @@ function MessageContent({ content }) {
       if (inCode) {
         elements.push(
           <pre key={i} className="bg-white/5 border border-white/10 rounded-xl p-4 my-3 overflow-x-auto">
-            <code className="text-sm text-emerald-300 font-mono leading-relaxed">{codeBuffer.join('\n')}</code>
+            <code className="text-sm text-emerald-300 font-mono leading-relaxed">
+              {codeBuffer.join('\n')}
+            </code>
           </pre>
         );
         codeBuffer = []; inCode = false;
-      } else inCode = true;
+      } else {
+        inCode = true;
+      }
       i++; continue;
     }
     if (inCode) { codeBuffer.push(line); i++; continue; }
 
     if      (line.startsWith('### ')) elements.push(<h3 key={i} className="text-base font-semibold text-white mt-4 mb-1">{line.slice(4)}</h3>);
-    else if (line.startsWith('## '))  elements.push(<h2 key={i} className="text-lg font-semibold text-white mt-5 mb-2">{line.slice(3)}</h2>);
-    else if (line.startsWith('# '))   elements.push(<h1 key={i} className="text-xl font-bold text-white mt-5 mb-2">{line.slice(2)}</h1>);
+    else if (line.startsWith('## '))  elements.push(<h2 key={i} className="text-lg  font-semibold text-white mt-5 mb-2">{line.slice(3)}</h2>);
+    else if (line.startsWith('# '))   elements.push(<h1 key={i} className="text-xl  font-bold    text-white mt-5 mb-2">{line.slice(2)}</h1>);
     else if (line.startsWith('- ') || line.startsWith('* '))
-      elements.push(<div key={i} className="flex gap-2 my-0.5"><span className="text-indigo-400 mt-1 shrink-0">•</span><span dangerouslySetInnerHTML={{ __html: inlineMd(line.slice(2)) }} /></div>);
+      elements.push(
+        <div key={i} className="flex gap-2 my-0.5">
+          <span className="text-indigo-400 mt-1 shrink-0">•</span>
+          <span dangerouslySetInnerHTML={{ __html: inlineMd(line.slice(2)) }} />
+        </div>
+      );
     else if (line.match(/^\d+\. /)) {
       const num = line.match(/^(\d+)\. /)[1];
-      elements.push(<div key={i} className="flex gap-2 my-0.5"><span className="text-indigo-400 shrink-0 min-w-[18px]">{num}.</span><span dangerouslySetInnerHTML={{ __html: inlineMd(line.replace(/^\d+\. /, '')) }} /></div>);
+      elements.push(
+        <div key={i} className="flex gap-2 my-0.5">
+          <span className="text-indigo-400 shrink-0 min-w-[18px]">{num}.</span>
+          <span dangerouslySetInnerHTML={{ __html: inlineMd(line.replace(/^\d+\. /, '')) }} />
+        </div>
+      );
     }
     else if (line.startsWith('---')) elements.push(<hr key={i} className="border-white/10 my-3" />);
     else if (line.trim() === '')     elements.push(<div key={i} className="h-2" />);
-    else elements.push(<p key={i} className="leading-relaxed" dangerouslySetInnerHTML={{ __html: inlineMd(line) }} />);
+    else elements.push(
+      <p key={i} className="leading-relaxed" dangerouslySetInnerHTML={{ __html: inlineMd(line) }} />
+    );
     i++;
   }
   return <div className="space-y-0.5 text-sm text-gray-200">{elements}</div>;
@@ -101,11 +117,35 @@ function MessageContent({ content }) {
 function CopyButton({ text }) {
   const [copied, setCopied] = useState(false);
   return (
-    <button onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
-      className="p-1.5 rounded-lg hover:bg-white/10 text-gray-500 hover:text-gray-300 transition-all">
+    <button
+      onClick={() => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+      className="p-1.5 rounded-lg hover:bg-white/10 text-gray-500 hover:text-gray-300 transition-all"
+    >
       {copied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
     </button>
   );
+}
+
+// ─── Normalise a message from DB or from API response ────────────────────────
+// DB assistant messages store charts/insights/suggestions inside `metadata`.
+// Live API responses return them at the top level.
+// This function flattens both into a consistent shape so the renderer
+// never has to check msg.charts vs msg.metadata.charts.
+function normaliseMessage(msg) {
+  const meta      = msg.metadata || {};
+  const charts    = msg.charts    ?? meta.charts    ?? [];
+  const insights  = msg.insights  ?? meta.insights  ?? [];
+  const suggestions = msg.suggestions ?? meta.suggestions ?? [];
+  const filename  = msg.filename  ?? meta.filename  ?? null;
+
+  return {
+    ...msg,
+    id:          msg.id ?? (Date.now() + Math.random()),
+    charts,
+    insights,
+    suggestions,
+    filename,
+  };
 }
 
 // ─── Welcome screen ───────────────────────────────────────────────────────────
@@ -129,8 +169,11 @@ function WelcomeScreen({ config, isDataScientist, onSuggestion, onFileClick }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-lg">
         {config.suggestions.map((s, i) => (
-          <button key={i} onClick={() => onSuggestion(s)}
-            className="text-left p-4 rounded-2xl border border-white/8 hover:border-white/20 hover:bg-white/5 transition-all group">
+          <button
+            key={i}
+            onClick={() => onSuggestion(s)}
+            className="text-left p-4 rounded-2xl border border-white/8 hover:border-white/20 hover:bg-white/5 transition-all group"
+          >
             <p className="text-sm text-gray-300 group-hover:text-white transition-colors leading-snug">{s}</p>
           </button>
         ))}
@@ -188,108 +231,237 @@ const SERVICE_CONFIG = {
 };
 
 // ─── Main component ───────────────────────────────────────────────────────────
-const ChatInterface = ({ token, serviceSlug, conversationId, onConversationCreated, initialMessages = null }) => {
-  const [messages, setMessages]           = useState([]);
-  const [input, setInput]                 = useState('');
-  const [isLoading, setIsLoading]         = useState(false);
-  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
-  const [selectedFile, setSelectedFile]   = useState(null);
+const ChatInterface = ({
+  token,
+  serviceSlug,
+  conversationId,
+  onConversationCreated,
+  initialMessages = null,
+}) => {
+  const [messages,          setMessages]          = useState([]);
+  const [showSeoModal, setShowSeoModal] = useState(false);
+  const [input,             setInput]             = useState('');
+  const [isLoading,         setIsLoading]         = useState(false);
+  const [isLoadingHistory,  setIsLoadingHistory]  = useState(false);
+  const [selectedFile,      setSelectedFile]      = useState(null);
+  const [localConvoId,      setLocalConvoId]      = useState(conversationId || null);
 
   const fileInputRef = useRef(null);
   const bottomRef    = useRef(null);
   const inputRef     = useRef(null);
+  const localConvoIdRef = useRef(localConvoId);
 
   const config          = SERVICE_CONFIG[serviceSlug] || SERVICE_CONFIG.blog_generator;
   const isDataScientist = serviceSlug === 'ai_data_scientist';
 
-  // Load history
+  // Keep ref in sync with state so closures always see the latest value
+  useEffect(() => { localConvoIdRef.current = localConvoId; }, [localConvoId]);
+
+  // Sync when parent passes a new conversationId (sidebar click)
+  useEffect(() => {
+    setLocalConvoId(conversationId || null);
+    localConvoIdRef.current = conversationId || null;
+  }, [conversationId]);
+
+  // ── Load history ─────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!conversationId || !token) { setMessages([]); return; }
-    if (initialMessages)           { setMessages(initialMessages); return; }
+
+    // If the parent already resolved messages (Dashboard prefetch), use them
+    if (initialMessages) {
+      setMessages(initialMessages.map(normaliseMessage));
+      return;
+    }
+
     setIsLoadingHistory(true);
     getMessages(conversationId, token)
-      .then(data => setMessages(data || []))
-      .catch(err => console.error('Load messages error:', err))
+      .then((data) => setMessages((data || []).map(normaliseMessage)))
+      .catch((err) => console.error('Load messages error:', err))
       .finally(() => setIsLoadingHistory(false));
   }, [conversationId, token, initialMessages]);
 
   // Auto-scroll
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
-  // ── Helpers ─────────────────────────────────────────────────────────────────
-  const appendMsg  = (msg) => setMessages(prev => [...prev, { id: Date.now() + Math.random(), ...msg }]);
+  // ── Helpers ──────────────────────────────────────────────────────────────────
+  const appendMsg = (msg) =>
+    setMessages((prev) => [...prev, normaliseMessage({ id: Date.now() + Math.random(), ...msg })]);
+
   const appendError = (text) => appendMsg({ role: 'assistant', content: text, isError: true });
 
-  // ── Regular text send ────────────────────────────────────────────────────────
+  const handleConvoCreated = (id) => {
+    if (!localConvoIdRef.current) {
+      setLocalConvoId(id);
+      localConvoIdRef.current = id;
+      onConversationCreated?.(id);
+    }
+  };
+
+  // ── Regular text send (blog, seo, sentiment, or follow-up DS questions) ─────
   const handleSend = async (text) => {
-    const query = (text || input).trim();
+    const query = (text ?? input).trim();
     if (!query || isLoading) return;
     setInput('');
     appendMsg({ role: 'user', content: query });
     setIsLoading(true);
     try {
-      const data = await sendMessage(query, serviceSlug, conversationId, token);
+      const data = await sendMessage(query, serviceSlug, localConvoIdRef.current, token);
       appendMsg({ role: 'assistant', content: data.response });
-      if (!conversationId && data.conversationId) onConversationCreated(data.conversationId);
-    } catch (err) { appendError(`Error: ${err.message}`); }
-    finally { setIsLoading(false); inputRef.current?.focus(); }
+      if (data.conversationId) handleConvoCreated(data.conversationId);
+    } catch (err) {
+      appendError(`Error: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+      inputRef.current?.focus();
+    }
   };
 
-  // ── CSV file send ────────────────────────────────────────────────────────────
+  // ── CSV file send (Data Scientist — first message or with a new file) ────────
   const handleFileSend = async () => {
     if (!selectedFile || isLoading) return;
-    const question = input.trim() || 'Analyze this dataset — give me key insights, trends, and statistics.';
 
+    const question =
+      input.trim() || 'Analyse this dataset — give me key insights, trends, and statistics.';
+
+    const fileToSend = selectedFile; // capture before clearing state
     setInput('');
     setSelectedFile(null);
-    appendMsg({ role: 'user', content: `📎 ${selectedFile.name}\n\n${question}` });
+
+    appendMsg({ role: 'user', content: `📎 ${fileToSend.name}\n\n${question}` });
     setIsLoading(true);
 
     try {
       const formData = new FormData();
-      formData.append('file', selectedFile);
+      formData.append('file', fileToSend);          // field name MUST match upload.single('file')
       formData.append('question', question);
-      if (conversationId) formData.append('conversationId', conversationId);
+      if (localConvoIdRef.current) formData.append('conversationId', localConvoIdRef.current);
 
       const res = await fetch(`${API_URL}/files/analyze`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
+        method:  'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        // ⚠️ Do NOT set Content-Type — browser sets multipart boundary automatically
         body: formData,
-        // ⚠️ Do NOT set Content-Type — browser handles multipart boundary
       });
 
-      if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Analysis failed'); }
+      if (!res.ok) {
+        const e = await res.json();
+        throw new Error(e.error || 'Analysis failed');
+      }
 
       const data = await res.json();
-      appendMsg({ role: 'assistant', content: data.analysis, chart: data.chart || null });
+      appendMsg({
+        role:        'assistant',
+        content:     data.analysis,
+        charts:      data.charts      || [],
+        insights:    data.insights    || [],
+        suggestions: data.suggestions || [],
+        filename:    data.filename,
+      });
 
-      if (!conversationId && data.conversationId) onConversationCreated(data.conversationId);
-    } catch (err) { appendError(`File analysis error: ${err.message}`); }
-    finally { setIsLoading(false); inputRef.current?.focus(); }
+      if (data.conversationId) {
+      localConvoIdRef.current = data.conversationId; // 🔥 CRITICAL
+      handleConvoCreated(data.conversationId);  
+      }
+    } catch (err) {
+      appendError(`File analysis error: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+      inputRef.current?.focus();
+    }
+
+  };
+
+  // ── Follow-up Data Scientist send (no new file — backend loads last CSV) ─────
+  const handleAnalyzeSend = async (question) => {
+    const query = (question ?? input).trim();
+    if (!query || isLoading) return;
+    setInput('');
+
+    appendMsg({ role: 'user', content: query });
+    setIsLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('question', query);
+      // Send conversationId so backend can retrieve the previously uploaded CSV
+      if (localConvoIdRef.current) formData.append('conversationId', localConvoIdRef.current);
+      console.log("Sending conversationId:", localConvoIdRef.current);
+      const res = await fetch(`${API_URL}/files/analyze`, {
+        method:  'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const e = await res.json();
+        throw new Error(e.error || 'Analysis failed');
+      }
+      
+
+      const data = await res.json();
+      appendMsg({
+        role:        'assistant',
+        content:     data.analysis,
+        charts:      data.charts      || [],
+        insights:    data.insights    || [],
+        suggestions: data.suggestions || [],
+        filename:    data.filename,
+      });
+
+      if (data.conversationId) handleConvoCreated(data.conversationId);
+    } catch (err) {
+      appendError(`Error: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+      inputRef.current?.focus();
+    }
+  };
+
+  // ── Routing ───────────────────────────────────────────────────────────────────
+  const handleSuggestionClick = (s) => {
+    if (isDataScientist) {
+      if (selectedFile) {
+        setInput(s);         // let user see the question before sending with file
+      } else {
+        handleAnalyzeSend(s);
+      }
+    } else {
+      handleSend(s);
+    }
   };
 
   const handleSubmit = () => {
-    if (isDataScientist && selectedFile) handleFileSend();
-    else handleSend();
+    if (isDataScientist && selectedFile) {
+      handleFileSend();
+    } else if (isDataScientist) {
+      handleAnalyzeSend(input.trim());
+    } else {
+      handleSend();
+    }
   };
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); }
   };
 
-  // Send button is enabled if: file selected (data scientist) OR text typed
   const canSend = !isLoading && ((isDataScientist && selectedFile) || input.trim().length > 0);
 
+  // ─────────────────────────────────────────────────────────────────────────────
   return (
     <div className="flex flex-col h-full relative">
-
+      {showSeoModal && (
+      <SeoModal onClose={() => setShowSeoModal(false)} />
+       )}
       {/* Hidden file picker */}
       <input
         ref={fileInputRef}
         type="file"
-        accept=".csv"
+        accept=".csv,text/csv,application/vnd.ms-excel"
         className="hidden"
-        onChange={(e) => { if (e.target.files[0]) setSelectedFile(e.target.files[0]); e.target.value = ''; }}
+        onChange={(e) => {
+          if (e.target.files[0]) setSelectedFile(e.target.files[0]);
+          e.target.value = '';
+        }}
       />
 
       {/* Messages */}
@@ -302,14 +474,16 @@ const ChatInterface = ({ token, serviceSlug, conversationId, onConversationCreat
           <WelcomeScreen
             config={config}
             isDataScientist={isDataScientist}
-            onSuggestion={handleSend}
+            onSuggestion={handleSuggestionClick}
             onFileClick={() => fileInputRef.current?.click()}
           />
         ) : (
           <div className="max-w-3xl mx-auto space-y-6 pb-36">
             {messages.map((msg, idx) => (
-              <div key={msg.id || idx} className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-
+              <div
+                key={msg.id ?? idx}
+                className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
                 {msg.role === 'assistant' && (
                   <div className="w-8 h-8 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0 mt-1">
                     <Sparkles size={14} className="text-indigo-400" />
@@ -319,13 +493,54 @@ const ChatInterface = ({ token, serviceSlug, conversationId, onConversationCreat
                 <div className={`group max-w-[85%] ${msg.role === 'user' ? 'order-first' : ''}`}>
                   {msg.role === 'user' ? (
                     <div className="bg-indigo-600/20 border border-indigo-500/20 rounded-2xl rounded-tr-md px-4 py-3">
-                      <p className="text-sm text-gray-200 leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                      <p className="text-sm text-gray-200 leading-relaxed whitespace-pre-wrap">
+                        {msg.content}
+                      </p>
                     </div>
                   ) : (
-                    <div className={`rounded-2xl rounded-tl-md px-4 py-3 ${msg.isError ? 'bg-rose-500/10 border border-rose-500/20' : 'bg-white/4 border border-white/8'}`}>
+                    <div
+                      className={`rounded-2xl rounded-tl-md px-4 py-3 ${
+                        msg.isError
+                          ? 'bg-rose-500/10 border border-rose-500/20'
+                          : 'bg-white/4 border border-white/8'
+                      }`}
+                    >
                       <MessageContent content={msg.content} />
-                      {/* Chart renders here if Gemini returned a chart config */}
-                      {msg.chart && <ChartRenderer chartConfig={msg.chart} />}
+
+                      {/* Charts — normalised so msg.charts is always an array */}
+                      {msg.charts?.length > 0 &&
+                        msg.charts.map((chart, i) => (
+                          <ChartRenderer key={i} chartConfig={chart} />
+                        ))}
+
+                      {/* Insights */}
+                      {msg.insights?.length > 0 && (
+                        <div className="mt-3 p-3 rounded-xl bg-indigo-500/5 border border-indigo-500/20">
+                          <p className="text-xs text-indigo-400 mb-2">Key Insights</p>
+                          {msg.insights.map((ins, i) => (
+                            <div key={i} className="text-sm text-gray-300">• {ins}</div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Follow-up suggestions */}
+                      {msg.suggestions?.length > 0 && (
+                        <div className="mt-3">
+                          <p className="text-xs text-gray-500 mb-2">Try asking:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {msg.suggestions.map((s, i) => (
+                              <button
+                                key={i}
+                                onClick={() => handleSuggestionClick(s)}
+                                className="text-xs px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-indigo-500/10 hover:border-indigo-500/30 transition-all"
+                              >
+                                {s}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       <div className="flex justify-end mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <CopyButton text={msg.content} />
                       </div>
@@ -365,7 +580,7 @@ const ChatInterface = ({ token, serviceSlug, conversationId, onConversationCreat
       <div className="absolute bottom-0 left-0 right-0 px-4 pb-6 pt-4 bg-gradient-to-t from-[#030014] via-[#030014]/95 to-transparent">
         <div className="max-w-3xl mx-auto">
 
-          {/* File pill — shown when a CSV is selected */}
+          {/* File pill */}
           {selectedFile && (
             <div className="flex items-center gap-2 mb-2 px-1">
               <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-xs text-indigo-300">
@@ -373,7 +588,10 @@ const ChatInterface = ({ token, serviceSlug, conversationId, onConversationCreat
                 <span className="max-w-[220px] truncate">{selectedFile.name}</span>
                 <span className="text-indigo-500">·</span>
                 <span className="text-indigo-500">{(selectedFile.size / 1024).toFixed(1)} KB</span>
-                <button onClick={() => setSelectedFile(null)} className="ml-1 hover:text-white transition-colors">
+                <button
+                  onClick={() => setSelectedFile(null)}
+                  className="ml-1 hover:text-white transition-colors"
+                >
                   <X size={12} />
                 </button>
               </div>
@@ -381,8 +599,17 @@ const ChatInterface = ({ token, serviceSlug, conversationId, onConversationCreat
           )}
 
           <div className="flex items-end gap-2 bg-white/5 border border-white/10 rounded-2xl px-3 py-3 focus-within:border-indigo-500/50 transition-colors">
-
-            {/* Paperclip — only for data scientist */}
+             {/* ⭐ SEO BUTTON */}
+              {serviceSlug === 'seo_optimizer' && (
+              <button
+              onClick={() => setShowSeoModal(true)}
+              title="Compare Websites"
+              className="w-8 h-8 rounded-xl flex items-center justify-center bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 hover:bg-yellow-500/20 transition-all shrink-0 mb-0.5"
+            >
+            <Star size={14} />
+          </button>
+         )}
+            {/* Paperclip — Data Scientist only */}
             {isDataScientist && (
               <button
                 onClick={() => fileInputRef.current?.click()}
@@ -424,9 +651,10 @@ const ChatInterface = ({ token, serviceSlug, conversationId, onConversationCreat
             >
               {isLoading
                 ? <Loader2 size={14} className="animate-spin text-white" />
-                : <Send size={14} className="text-white" />
+                : <Send    size={14} className="text-white" />
               }
             </button>
+            
           </div>
 
           <p className="text-center text-[10px] text-gray-700 mt-2">
@@ -438,7 +666,7 @@ const ChatInterface = ({ token, serviceSlug, conversationId, onConversationCreat
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 10px; }
-        .bg-white\/4 { background: rgba(255,255,255,0.04); }
+        .bg-white\/4  { background: rgba(255,255,255,0.04); }
         .border-white\/8 { border-color: rgba(255,255,255,0.08); }
       `}</style>
     </div>

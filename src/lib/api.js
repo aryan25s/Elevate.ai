@@ -37,6 +37,28 @@ export async function sendMessage(query, serviceSlug, conversationId, token) {
     method: 'POST',
     body: JSON.stringify({ query, serviceSlug, conversationId }),
   }, token);
+  if (serviceSlug === "seo_optimizer") {
+  const res = await fetch(`${API_URL}/seo/compare`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      urls: query.split(',') // quick input parsing
+    }),
+  });
+
+  const data = await res.json();
+
+  appendMsg({
+    role: "assistant",
+    content: "SEO Comparison Result",
+    metadata: data.metadata
+  });
+
+  return;
+}
 }
 
 // ─── Conversations ────────────────────────────────────────────────────────────

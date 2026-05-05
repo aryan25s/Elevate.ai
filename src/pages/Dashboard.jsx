@@ -41,6 +41,9 @@ const Dashboard = ({ defaultModel = 'blog' }) => {
   const [loadedMessages, setLoadedMessages] = useState({
     blog: null, seo: null, data: null, sentiment: null,
   });
+  const [chatKeys, setChatKeys] = useState({
+  blog: 0, seo: 0, data: 0, sentiment: 0,
+  });
 
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -92,6 +95,7 @@ const Dashboard = ({ defaultModel = 'blog' }) => {
 
     setCurrentModel(modelId);
     setConversationIds(prev => ({ ...prev, [modelId]: convo.id }));
+    setChatKeys(prev => ({ ...prev, [modelId]: prev[modelId] + 1 }));
 
     // Fetch and pre-load messages so there's no flicker
     try {
@@ -102,10 +106,11 @@ const Dashboard = ({ defaultModel = 'blog' }) => {
       setLoadedMessages(prev => ({ ...prev, [modelId]: [] }));
     }
   };
-
+  
   const handleNewChat = () => {
-    setConversationIds(prev => ({ ...prev, [currentModel]: null }));
-    setLoadedMessages(prev => ({ ...prev, [currentModel]: null }));
+   setConversationIds(prev => ({ ...prev, [currentModel]: null }));
+  setLoadedMessages(prev => ({ ...prev, [currentModel]: null }));
+  setChatKeys(prev => ({ ...prev, [currentModel]: prev[currentModel] + 1 }));
   };
 
   const handleModelSwitch = (modelId) => {
@@ -269,7 +274,7 @@ const Dashboard = ({ defaultModel = 'blog' }) => {
         <main className="flex-grow relative overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
-              key={`${currentModel}-${conversationIds[currentModel]}`}
+              key={`${currentModel}-${chatKeys[currentModel]}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}

@@ -80,7 +80,11 @@ async function maybeTitleConversation(conversationId, firstMessage) {
       .eq('id', conversationId);
   }
 }
-
+const MODEL_FALLBACKS = [
+      'gemini-3.1-flash-lite-preview',
+      'gemini-3-flash-preview',
+      'gemini-3.1-flash-live-preview',
+    ];
 // ─── POST /query ──────────────────────────────────────────────────────────────
 router.post('/', async (req, res) => {
   const { query, serviceSlug, conversationId } = req.body;
@@ -114,12 +118,14 @@ router.post('/', async (req, res) => {
     await saveMessage(activeConvoId, 'user', query, nextSeq);
 
     // 7. Call Gemini with full conversation history
-    const chat = genai.chats.create({
-      model: 'gemini-2.5-flash',
-      config: { systemInstruction: service.system_prompt },
-      history,
-    });
-    const geminiRes = await chat.sendMessage({ message: query });
+    for (const model of MODEL_FALLBACKS) {
+      try {
+        const chat = genai.chats.create({
+          model,
+          config: { systemInstruction: service.system_prompt },
+          history,
+        });
+        const geminiRes = await chat.sendMessage({ message: query });
     const assistantText = geminiRes.text;
 
     // 8. Save Gemini's response
@@ -130,7 +136,17 @@ router.post('/', async (req, res) => {
       response: assistantText,
       conversationId: activeConvoId,  // frontend stores this for the next message
     });
-
+        break; // success — exit the retry loop
+      } catch (modelErr) {
+        const statusCode = modelErr?.status ?? modelErr?.error?.code ?? 0;
+        if (statusCode === 503 || statusCode === 429) {
+          console.warn(`[Gemini] ${model} unavailable (${statusCode}), trying next model...`);
+        } else {
+          throw modelErr; // non-transient error — rethrow immediately
+        }
+      }
+    }
+    
   } catch (err) {
     console.error('[/query]', err.message);
     res.status(500).json({ error: err.message || 'Something went wrong' });
