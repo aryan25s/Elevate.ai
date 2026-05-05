@@ -7,6 +7,9 @@ import queryRouter from './routes/query.js';
 import conversationsRouter from './routes/conversations.js';
 import filesRouter from './routes/files.js';
 import seoRoutes from './routes/seo.js';
+import cors from 'cors';
+
+
 dotenv.config();
 
 const app = express();
@@ -22,4 +25,7 @@ app.use('/query',         requireAuth, queryRouter);
 app.use('/conversations', requireAuth, conversationsRouter);
 app.use('/files',         requireAuth, filesRouter);
 app.use('/seo', seoRoutes);
+app.use(cors({
+  origin: '*'
+}));
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
