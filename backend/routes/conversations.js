@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
     .eq('user_id', userId)
     .eq('is_archived', false)
     .order('updated_at', { ascending: false });
-
+  
   // If a service filter is passed, filter by it
   if (serviceSlug) {
     const { data: service } = await supabase

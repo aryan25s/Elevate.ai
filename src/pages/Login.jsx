@@ -1,25 +1,61 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, Sparkles } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Sparkles, AlertCircle } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Simulate login and redirect to the unified dashboard
+    setError('');
+    setIsLoading(true);
+
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (authError) {
+      setError(authError.message);
+      setIsLoading(false);
+      return;
+    }
+
+    // Auth succeeded — supabase stores the session automatically
     navigate('/app');
+  };
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    if (!email || !password) {
+      setError('Please enter your email and password first.');
+      return;
+    }
+    setError('');
+    setIsLoading(true);
+
+    const { error: signUpError } = await supabase.auth.signUp({ email, password });
+
+    if (signUpError) {
+      setError(signUpError.message);
+    } else {
+      setError('');
+      alert('Account created! Check your email to confirm, then log in.');
+    }
+    setIsLoading(false);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#030014] relative overflow-hidden px-6">
-      {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/10 blur-[120px] pointer-events-none" />
-      
-      <motion.div 
+
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -39,14 +75,26 @@ const Login = () => {
         </div>
 
         <div className="glass-card-new p-8">
+          {/* Error message */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-2 p-3 mb-6 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-400 text-sm"
+            >
+              <AlertCircle size={16} className="shrink-0" />
+              {error}
+            </motion.div>
+          )}
+
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-2">Email Address</label>
               <div className="relative">
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   required
-                  placeholder="name@company.com" 
+                  placeholder="name@company.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="input-field-new pl-11"
@@ -58,13 +106,12 @@ const Login = () => {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <label className="text-sm font-medium text-gray-400">Password</label>
-                <a href="#" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">Forgot password?</a>
               </div>
               <div className="relative">
-                <input 
-                  type="password" 
+                <input
+                  type="password"
                   required
-                  placeholder="••••••••" 
+                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="input-field-new pl-11"
@@ -73,18 +120,29 @@ const Login = () => {
               </div>
             </div>
 
-            <button 
+            <button
               type="submit"
+              disabled={isLoading}
               className="w-full btn-primary-new flex items-center justify-center gap-2 py-3"
             >
-              Login to Dashboard <ArrowRight className="w-4 h-4" />
+              {isLoading ? (
+                <span className="animate-pulse">Logging in...</span>
+              ) : (
+                <>Login to Dashboard <ArrowRight className="w-4 h-4" /></>
+              )}
             </button>
           </form>
 
           <div className="mt-8 pt-8 border-t border-white/5 text-center">
             <p className="text-sm text-gray-500">
-              Don't have an account? {' '}
-              <a href="#" className="text-indigo-400 font-bold hover:text-indigo-300 transition-colors">Sign up for free</a>
+              Don&apos;t have an account?{' '}
+              <button
+                onClick={handleSignUp}
+                disabled={isLoading}
+                className="text-indigo-400 font-bold hover:text-indigo-300 transition-colors bg-transparent border-none cursor-pointer"
+              >
+                Sign up for free
+              </button>
             </p>
           </div>
         </div>
