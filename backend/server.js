@@ -28,6 +28,22 @@ app.use('/seo', seoRoutes);
 app.use(cors({
   origin: '*'
 }));
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+});
+
+server.on("close", () => {
+  console.log("SERVER CLOSED");
+});
+
+process.on("exit", (code) => {
+  console.log("Process exiting with code:", code);
+});
+
+process.on("uncaughtException", (err) => {
+  console.error("UNCAUGHT EXCEPTION:", err);
+});
+
+process.on("unhandledRejection", (err) => {
+  console.error("UNHANDLED REJECTION:", err);
 });

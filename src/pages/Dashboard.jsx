@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Plus, MessageSquare, ChevronDown, Sparkles,
   PenTool, Search, BarChart3, Smile, Menu,
-  Clock, LogOut, Trash2
+  Clock, LogOut, Trash2, Send
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -18,10 +18,34 @@ const SERVICE_SLUG = {
 };
 
 const MODELS = [
-  { id: 'blog',      name: 'Blog Generator',    icon: <PenTool size={16} />,   desc: 'Write SEO-optimized blog posts.' },
-  { id: 'seo',       name: 'SEO Optimizer',     icon: <Search size={16} />,    desc: 'Keyword research & strategies.' },
-  { id: 'data',      name: 'Data Scientist',    icon: <BarChart3 size={16} />, desc: 'Analyze data for insights.' },
-  { id: 'sentiment', name: 'Sentiment Analysis',icon: <Smile size={16} />,     desc: 'Understand text emotions.' },
+  { 
+    id: 'blog',
+    name: 'Blog Generator',
+    icon: <PenTool size={16} />,
+    desc: 'Write SEO-optimized blog posts.',
+    placeholder: 'Write your blog idea...'
+  },
+  { 
+    id: 'seo',
+    name: 'SEO Optimizer',
+    icon: <Search size={16} />,
+    desc: 'Keyword research & strategies.',
+    placeholder: 'Enter SEO query...'
+  },
+  { 
+    id: 'data',
+    name: 'Data Scientist',
+    icon: <BarChart3 size={16} />,
+    desc: 'Analyze data for insights.',
+    placeholder: 'Ask about your data...'
+  },
+  { 
+    id: 'sentiment',
+    name: 'Sentiment Analysis',
+    icon: <Smile size={16} />,
+    desc: 'Understand text emotions.',
+    placeholder: 'Enter text for sentiment analysis...'
+  },
 ];
 
 const Dashboard = ({ defaultModel = 'blog' }) => {
@@ -47,6 +71,10 @@ const Dashboard = ({ defaultModel = 'blog' }) => {
 
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+const [isGenerating, setIsGenerating] = useState(false);
+const [uploadedFile, setUploadedFile] = useState(null);
+const fileInputRef = React.useRef(null);
   const navigate = useNavigate();
 
   // Auth
@@ -137,6 +165,16 @@ const Dashboard = ({ defaultModel = 'blog' }) => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/login');
+  };
+
+  const handleSend = async (e) => {
+    e.preventDefault();
+  
+    if (!inputValue.trim()) return;
+  
+    console.log("Message:", inputValue);
+  
+    setInputValue('');
   };
 
   const currentModelData = MODELS.find(m => m.id === currentModel);
