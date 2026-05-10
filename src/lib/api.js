@@ -32,30 +32,9 @@ async function apiFetch(path, options = {}, token) {
  * @param {string} token         - Supabase JWT
  * @returns {{ response: string, conversationId: string }}
  */
+// ─── Chat ─────────────────────────────────────────────────────────────────────
+
 export async function sendMessage(query, serviceSlug, conversationId, token) {
-
-  // SEO special route
-  if (serviceSlug === "seo_optimizer") {
-    const res = await fetch(`${API_URL}/seo/compare`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        urls: query.split(',')
-      }),
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ error: 'SEO request failed' }));
-      throw new Error(err.error || `HTTP ${res.status}`);
-    }
-
-    return res.json();
-  }
-
-  // Normal chat route
   return apiFetch('/query', {
     method: 'POST',
     body: JSON.stringify({
@@ -65,7 +44,6 @@ export async function sendMessage(query, serviceSlug, conversationId, token) {
     }),
   }, token);
 }
-
 // ─── Conversations ────────────────────────────────────────────────────────────
 
 /**
