@@ -331,7 +331,7 @@ const fileInputRef = React.useRef(null);
         </main>
 
         {/* Global Bottom Input Bar */}
-        <div className="fixed bottom-0 right-0 p-6 bg-gradient-to-t from-[#030014] via-[#030014] to-transparent z-50 transition-all duration-300" 
+        {/* <div className="fixed bottom-0 right-0 p-6 bg-gradient-to-t from-[#030014] via-[#030014] to-transparent z-50 transition-all duration-300" 
              style={{ left: isSidebarOpen ? '260px' : '0' }}>
           <div className="max-w-3xl mx-auto relative group">
             <form onSubmit={handleSend} className="flex items-center gap-3">
@@ -378,7 +378,7 @@ const fileInputRef = React.useRef(null);
               Elevate AI can make mistakes. Consider checking important information.
             </p>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <style>{`

@@ -33,32 +33,37 @@ async function apiFetch(path, options = {}, token) {
  * @returns {{ response: string, conversationId: string }}
  */
 export async function sendMessage(query, serviceSlug, conversationId, token) {
+
+  // SEO special route
+  if (serviceSlug === "seo_optimizer") {
+    const res = await fetch(`${API_URL}/seo/compare`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        urls: query.split(',')
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: 'SEO request failed' }));
+      throw new Error(err.error || `HTTP ${res.status}`);
+    }
+
+    return res.json();
+  }
+
+  // Normal chat route
   return apiFetch('/query', {
     method: 'POST',
-    body: JSON.stringify({ query, serviceSlug, conversationId }),
-  }, token);
-  if (serviceSlug === "seo_optimizer") {
-  const res = await fetch(`${API_URL}/seo/compare`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
     body: JSON.stringify({
-      urls: query.split(',') // quick input parsing
+      query,
+      serviceSlug,
+      conversationId
     }),
-  });
-
-  const data = await res.json();
-
-  appendMsg({
-    role: "assistant",
-    content: "SEO Comparison Result",
-    metadata: data.metadata
-  });
-
-  return;
-}
+  }, token);
 }
 
 // ─── Conversations ────────────────────────────────────────────────────────────
